@@ -1,5 +1,4 @@
 // This is the boilerplate code given for you
-// You can modify this code
 // Product data
 const products = [
   { id: 1, name: "Product 1", price: 10 },
@@ -9,30 +8,53 @@ const products = [
   { id: 5, name: "Product 5", price: 50 },
 ];
 
-// DOM elements
-const productList = document.getElementById("product-list");
-
-// Render product list
-function renderProducts() {
-  products.forEach((product) => {
-    const li = document.createElement("li");
-    li.innerHTML = `${product.name} - $${product.price} <button class="add-to-cart-btn" data-id="${product.id}">Add to Cart</button>`;
-    productList.appendChild(li);
+// Function to display products
+function displayProducts() {
+  const productList = document.getElementById("product-list");
+  productList.innerHTML = "";
+  products.forEach(product => {
+    const listItem = document.createElement("li");
+    listItem.innerHTML = `${product.name} - $${product.price} <button onclick="addToCart(${product.id})">Add to Cart</button>`;
+    productList.appendChild(listItem);
   });
 }
 
-// Render cart list
-function renderCart() {}
+// Function to add a product to the cart
+function addToCart(productId) {
+  const selectedProduct = products.find(product => product.id === productId);
+  if (selectedProduct) {
+    let cart = JSON.parse(sessionStorage.getItem("cart")) || [];
+    cart.push(selectedProduct);
+    sessionStorage.setItem("cart", JSON.stringify(cart));
+    displayCart();
+  }
+}
 
-// Add item to cart
-function addToCart(productId) {}
+// Function to display the cart
+function displayCart() {
+  const cartList = document.getElementById("cart-list");
+  cartList.innerHTML = "";
+  const cart = JSON.parse(sessionStorage.getItem("cart")) || [];
+  cart.forEach(product => {
+    const listItem = document.createElement("li");
+    listItem.textContent = `${product.name} - $${product.price}`;
+    cartList.appendChild(listItem);
+  });
+}
 
-// Remove item from cart
-function removeFromCart(productId) {}
+// Function to clear the cart
+function clearCart() {
+  sessionStorage.removeItem("cart");
+  displayCart();
+}
 
-// Clear cart
-function clearCart() {}
+// Initial setup
+window.onload = function() {
+  displayProducts();
+  displayCart();
+  const clearCartBtn = document.getElementById("clear-cart-btn");
+  clearCartBtn.addEventListener("click", clearCart);
+};
 
-// Initial render
-renderProducts();
-renderCart();
+// You can modify this code
+// Product data
