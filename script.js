@@ -27,10 +27,10 @@ function addToCart(productId) {
     // Check if the product is already in the cart
     const existingProductIndex = cart.findIndex(product => product.id === productId);
     if (existingProductIndex !== -1) {
-      // If the product is already in the cart, increment its quantity instead of adding it again
+      // If the product is already in the cart, increment its quantity
       cart[existingProductIndex].quantity++;
     } else {
-      // If the product is not in the cart, add it
+      // If the product is not in the cart, add it with a quantity of 1
       selectedProduct.quantity = 1;
       cart.push(selectedProduct);
     }
@@ -38,6 +38,7 @@ function addToCart(productId) {
     displayCart();
   }
 }
+
 
 
 // Function to display the cart
