@@ -24,11 +24,21 @@ function addToCart(productId) {
   const selectedProduct = products.find(product => product.id === productId);
   if (selectedProduct) {
     let cart = JSON.parse(sessionStorage.getItem("cart")) || [];
-    cart.push(selectedProduct);
+    // Check if the product is already in the cart
+    const existingProductIndex = cart.findIndex(product => product.id === productId);
+    if (existingProductIndex !== -1) {
+      // If the product is already in the cart, increment its quantity instead of adding it again
+      cart[existingProductIndex].quantity++;
+    } else {
+      // If the product is not in the cart, add it
+      selectedProduct.quantity = 1;
+      cart.push(selectedProduct);
+    }
     sessionStorage.setItem("cart", JSON.stringify(cart));
     displayCart();
   }
 }
+
 
 // Function to display the cart
 function displayCart() {
