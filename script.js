@@ -8,64 +8,63 @@ const products = [
   { id: 5, name: "Product 5", price: 50 },
 ];
 
-// Function to display products
-function displayProducts() {
+// Function to render products
+function renderProducts() {
   const productList = document.getElementById("product-list");
   productList.innerHTML = "";
+
   products.forEach(product => {
-    const listItem = document.createElement("li");
-    listItem.innerHTML = `${product.name} - $${product.price} <button onclick="addToCart(${product.id})">Add to Cart</button>`;
-    productList.appendChild(listItem);
+    const li = document.createElement("li");
+    li.innerHTML = `
+      <span>${product.name} - $${product.price}</span>
+      <button class="add-to-cart-btn" data-id="${product.id}">Add to Cart</button>
+    `;
+    productList.appendChild(li);
   });
 }
 
-// Function to add a product to the cart
+// Function to render cart items
+function renderCart() {
+  const cartList = document.getElementById("cart-list");
+  cartList.innerHTML = "";
+
+  const cartItems = JSON.parse(sessionStorage.getItem("cart")) || [];
+
+  cartItems.forEach(item => {
+    const li = document.createElement("li");
+    li.textContent = `${item.name} - $${item.price}`;
+    cartList.appendChild(li);
+  });
+}
+
+// Function to add item to cart
 function addToCart(productId) {
-  const selectedProduct = products.find(product => product.id === productId);
-  if (selectedProduct) {
-    let cart = JSON.parse(sessionStorage.getItem("cart")) || [];
-    // Check if the product is already in the cart
-    const existingProductIndex = cart.findIndex(product => product.id === productId);
-    if (existingProductIndex !== -1) {
-      // If the product is already in the cart, increment its quantity
-      cart[existingProductIndex].quantity++;
-    } else {
-      // If the product is not in the cart, add it with a quantity of 1
-      selectedProduct.quantity = 1;
-      cart.push(selectedProduct);
-    }
-    sessionStorage.setItem("cart", JSON.stringify(cart));
-    displayCart();
+  const product = products.find(p => p.id === productId);
+  if (product) {
+    const cartItems = JSON.parse(sessionStorage.getItem("cart")) || [];
+    cartItems.push(product);
+    sessionStorage.setItem("cart", JSON.stringify(cartItems));
+    renderCart();
   }
 }
 
-
-
-// Function to display the cart
-function displayCart() {
-  const cartList = document.getElementById("cart-list");
-  cartList.innerHTML = "";
-  const cart = JSON.parse(sessionStorage.getItem("cart")) || [];
-  cart.forEach(product => {
-    const listItem = document.createElement("li");
-    listItem.textContent = `${product.name} - $${product.price}`;
-    cartList.appendChild(listItem);
-  });
-}
-
-// Function to clear the cart
+// Function to clear cart
 function clearCart() {
   sessionStorage.removeItem("cart");
-  displayCart();
+  renderCart();
 }
 
-// Initial setup
-window.onload = function() {
-  displayProducts();
-  displayCart();
-  const clearCartBtn = document.getElementById("clear-cart-btn");
-  clearCartBtn.addEventListener("click", clearCart);
-};
+// Event listener for Add to Cart buttons
+document.addEventListener("click", function(event) {
+  if (event.target.classList.contains("add-to-cart-btn")) {
+    const productId = parseInt(event.target.dataset.id);
+    addToCart(productId);
+  }
+});
 
-// You can modify this code
-// Product data
+// Event listener for Clear Cart button
+document.getElementById("clear-cart-btn").addEventListener("click", clearCart);
+
+// Initial rendering
+renderProducts();
+renderCart();
